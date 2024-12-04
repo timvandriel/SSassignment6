@@ -34,9 +34,11 @@ class TestMember(unittest.TestCase):
         self.assertFalse(
             member.borrow_book(book4)
         )  # Test the borrow_book method with limit
-        self.assertNotIn(book4, member.borrowed_books)
+        self.assertNotIn(
+            book4, member.borrowed_books
+        )  # Test the borrow_book method with limit
 
-    def test_return_book_success(self):
+    def test_return_book_success(self):  # Test the return_book method with success
         member = Member("M1234", "Member Name")
         book = Book("B1234", "Test Book", "Author Name", 5)
         member.borrow_book(book)
@@ -44,18 +46,28 @@ class TestMember(unittest.TestCase):
         self.assertEqual(returned_book, book)
         self.assertNotIn(book, member.borrowed_books)
 
-    def test_return_book_not_found(self):
+    def test_return_book_not_found(
+        self,
+    ):  # Test the return_book method with book not found
         member = Member(member_id=1, name="John Doe")
         book1 = Book(book_id=1, title="Book One", author="Author A", copies=1)
         member.borrow_book(book1)
         result = member.return_book(book_id=2)
         self.assertIsNone(result)
 
-    def test_return_book_not_borrowed(self):
+    def test_return_book_not_borrowed(
+        self,
+    ):  # Test the return_book method with book not borrowed
         member = Member("M1234", "Member Name")
         book = Book("B1234", "Test Book", "Author Name", 5)
         returned_book = member.return_book(book.book_id)
         self.assertIsNone(returned_book)
+
+    def test_member_str(self):  # Test the __str__ method
+        member = Member("M1234", "Member Name")
+        self.assertEqual(
+            str(member), "ID: M1234, Name: Member Name, Borrowed Books: None"
+        )
 
 
 class TestLibrary(unittest.TestCase):
@@ -63,14 +75,56 @@ class TestLibrary(unittest.TestCase):
         self.library = Library()
 
     def test_add_book(self):
-        self.library.add_book("Test Book", "Author Name", 5)
+        # Capture the output
+        captured_output = StringIO()
+        sys.stdout = captured_output
+
+        # Add a book
+        self.library.add_book(title="New Book", author="Author X", copies=5)
+
+        # Restore stdout
+        sys.stdout = sys.__stdout__
+
+        # Check if the book is added to the list
         self.assertEqual(len(self.library.books), 1)
-        self.assertEqual(self.library.books[0].title, "Test Book")
+        added_book = self.library.books[0]
+
+        # Check the book attributes
+        self.assertEqual(added_book.title, "New Book")
+        self.assertEqual(added_book.author, "Author X")
+        self.assertEqual(added_book.copies, 5)
+
+        # Check if the book ID is correctly formatted
+        self.assertTrue(added_book.book_id.startswith("B"))
+        self.assertTrue(1000 <= int(added_book.book_id[1:]) <= 9999)
+
+        # Check the printed message
+        self.assertIn(f"Book added: {added_book}", captured_output.getvalue())
 
     def test_add_member(self):
-        self.library.add_member("Member Name")
+        # Capture the output
+        captured_output = StringIO()
+        sys.stdout = captured_output
+
+        # Add a member
+        self.library.add_member(name="Jane Doe")
+
+        # Restore stdout
+        sys.stdout = sys.__stdout__
+
+        # Check if the member is added to the list
         self.assertEqual(len(self.library.members), 1)
-        self.assertEqual(self.library.members[0].name, "Member Name")
+        added_member = self.library.members[0]
+
+        # Check the member attributes
+        self.assertEqual(added_member.name, "Jane Doe")
+
+        # Check if the member ID is correctly formatted
+        self.assertTrue(added_member.member_id.startswith("M"))
+        self.assertTrue(1000 <= int(added_member.member_id[1:]) <= 9999)
+
+        # Check the printed message
+        self.assertIn(f"Member added: {added_member}", captured_output.getvalue())
 
     def test_borrow_book(self):
         self.library.add_book("Test Book", "Author Name", 5)
@@ -90,6 +144,67 @@ class TestLibrary(unittest.TestCase):
         self.library.return_book(member_id, book_id)
         self.assertEqual(self.library.books[0].copies, 5)
         self.assertEqual(len(self.library.members[0].borrowed_books), 0)
+
+    def test_no_member_found(self):
+        captured_output = StringIO()
+        sys.stdout = captured_output
+        self.library.borrow_book(member_id=999, book_id=1)
+        sys.stdout = sys.__stdout__
+        self.assertIn("No member found with ID 999", captured_output.getvalue())
+
+    def test_no_book_found(self):
+        captured_output = StringIO()
+        sys.stdout = captured_output
+        self.library.borrow_book(member_id=1, book_id=999)
+        sys.stdout = sys.__stdout__
+        self.assertIn("No book found with ID 999", captured_output.getvalue())
+
+    def test_no_copies_available(self):
+        self.library.add_book("Test Book", "Author Name", 0)
+        self.library.add_member("Member Name")
+        book_id = self.library.books[0].book_id
+        member_id = self.library.members[0].member_id
+        captured_output = StringIO()
+        sys.stdout = captured_output
+        self.library.borrow_book(member_id, book_id)
+        sys.stdout = sys.__stdout__
+        self.assertIn(
+            "No copies available for book: Test Book", captured_output.getvalue()
+        )
+
+    def test_successful_borrow(self):
+        self.library.add_book("Test Book", "Author Name", 5)
+        self.library.add_member("Member Name")
+        book_id = self.library.books[0].book_id
+        member_id = self.library.members[0].member_id
+        captured_output = StringIO()
+        sys.stdout = captured_output
+        self.library.borrow_book(member_id, book_id)
+        sys.stdout = sys.__stdout__
+        self.assertIn(
+            "Book borrowed: Test Book by Member Name", captured_output.getvalue()
+        )
+        self.assertEqual(self.library.books[0].copies, 4)
+        self.assertIn((member_id, book_id, "borrow"), self.library.transactions)
+
+    def test_max_books_borrowed(self):
+        self.library.add_book("Test Book 1", "Author Name", 1)
+        self.library.add_book("Test Book 2", "Author Name", 1)
+        self.library.add_book("Test Book 3", "Author Name", 1)
+        self.library.add_book("Test Book 4", "Author Name", 1)
+        self.library.add_member("Member Name")
+        member_id = self.library.members[0].member_id
+        self.library.borrow_book(member_id, self.library.books[0].book_id)
+        self.library.borrow_book(member_id, self.library.books[1].book_id)
+        self.library.borrow_book(member_id, self.library.books[2].book_id)
+        captured_output = StringIO()
+        sys.stdout = captured_output
+        self.library.borrow_book(member_id, self.library.books[3].book_id)
+        sys.stdout = sys.__stdout__
+        self.assertIn(
+            "Member Name has already borrowed the maximum number of books.",
+            captured_output.getvalue(),
+        )
 
 
 class TestCalculator(unittest.TestCase):
