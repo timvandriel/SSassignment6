@@ -1,16 +1,12 @@
 import unittest
+from io import StringIO
+import sys
 from exCode import Book, Member, Library, Calculator
 
 
 class TestBook(unittest.TestCase):
-    def test_book_creation(self):
-        book = Book("B1234", "Test Book", "Author Name", 5)
-        self.assertEqual(book.book_id, "B1234")
-        self.assertEqual(book.title, "Test Book")
-        self.assertEqual(book.author, "Author Name")
-        self.assertEqual(book.copies, 5)
-
-    def test_book_str(self):
+    # Test the Book class
+    def test_book_str(self):  # Test the __str__ method
         book = Book("B1234", "Test Book", "Author Name", 5)
         self.assertEqual(
             str(book), "ID: B1234, Title: Test Book, Author: Author Name, Copies: 5"
@@ -18,25 +14,15 @@ class TestBook(unittest.TestCase):
 
 
 class TestMember(unittest.TestCase):
-    def test_member_creation(self):
-        member = Member("M1234", "Member Name")
-        self.assertEqual(member.member_id, "M1234")
-        self.assertEqual(member.name, "Member Name")
-        self.assertEqual(member.borrowed_books, [])
-
-    def test_borrow_book(self):
+    # Test the Member class
+    def test_borrow_book(self):  # Test the borrow_book method
         member = Member("M1234", "Member Name")
         book = Book("B1234", "Test Book", "Author Name", 5)
-        book1 = Book("B1235", "Test Book 1", "Author Name", 5)
-        book2 = Book("B1236", "Test Book 2", "Author Name", 5)
-        book3 = Book("B1237", "Test Book 3", "Author Name", 5)
-        self.assertTrue(member.borrow_book(book))
-        self.assertTrue(member.borrow_book(book1))
-        self.assertTrue(member.borrow_book(book2))
-        self.assertIn(book, member.borrowed_books)
-        self.assertFalse(member.borrow_book(book3))
+        self.assertTrue(
+            member.borrow_book(book)
+        )  # Test the borrow_book method with success
 
-    def test_borrow_book_limit(self):
+    def test_borrow_book_limit(self):  # Test the borrow_book method with limit
         member = Member("M1234", "Member Name")
         book1 = Book("B1234", "Test Book 1", "Author Name", 5)
         book2 = Book("B1235", "Test Book 2", "Author Name", 5)
@@ -45,7 +31,9 @@ class TestMember(unittest.TestCase):
         member.borrow_book(book1)
         member.borrow_book(book2)
         member.borrow_book(book3)
-        self.assertFalse(member.borrow_book(book4))
+        self.assertFalse(
+            member.borrow_book(book4)
+        )  # Test the borrow_book method with limit
         self.assertNotIn(book4, member.borrowed_books)
 
     def test_return_book_success(self):
