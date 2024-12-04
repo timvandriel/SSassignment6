@@ -27,8 +27,14 @@ class TestMember(unittest.TestCase):
     def test_borrow_book(self):
         member = Member("M1234", "Member Name")
         book = Book("B1234", "Test Book", "Author Name", 5)
+        book1 = Book("B1235", "Test Book 1", "Author Name", 5)
+        book2 = Book("B1236", "Test Book 2", "Author Name", 5)
+        book3 = Book("B1237", "Test Book 3", "Author Name", 5)
         self.assertTrue(member.borrow_book(book))
+        self.assertTrue(member.borrow_book(book1))
+        self.assertTrue(member.borrow_book(book2))
         self.assertIn(book, member.borrowed_books)
+        self.assertFalse(member.borrow_book(book3))
 
     def test_borrow_book_limit(self):
         member = Member("M1234", "Member Name")
@@ -49,6 +55,13 @@ class TestMember(unittest.TestCase):
         returned_book = member.return_book(book.book_id)
         self.assertEqual(returned_book, book)
         self.assertNotIn(book, member.borrowed_books)
+
+    def test_return_book_not_found(self):
+        member = Member(member_id=1, name="John Doe")
+        book1 = Book(book_id=1, title="Book One", author="Author A", copies=1)
+        member.borrow_book(book1)
+        result = member.return_book(book_id=2)
+        self.assertIsNone(result)
 
     def test_return_book_not_borrowed(self):
         member = Member("M1234", "Member Name")
