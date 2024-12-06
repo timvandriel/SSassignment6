@@ -65,4 +65,38 @@ Expected Output:    True
 Library Tests
 TC007
 Title:              test_add_book
-Precondition:       
+Precondition:       self.library.add_book(title="New Book", author="Author X", copies=5)
+                    added_book = self.library.books[0]                   
+Tests:              len(self.libray.books) =1
+                    added_book.title = "New Book"
+                    added_book.author = "Author X"
+                    added_book.copies = 5
+                    added_book.book_id.startswith("B")
+                    1000 <= int(added_book.book_id[1:]) <= 9999
+                    f"Book added: {added_book}" = captured_output.getvalue()
+Expected Output:              All True
+
+
+TC008
+Title:              test_add_member
+Precondition:       add_member(name="Jane Doe")
+                    added_member = self.library.members[0]
+Tests:              len(self.library.members) = 1
+                    added_member.name = "Jane Doe"
+                    addedd_member.member_id.startswith("M")
+                    1000 <= int(added_member.member_id[1:]) <= 9999
+                    output = f"Member added: {added_member}"
+Expected Output:    All True
+
+TC009
+Title:              test_successsful_borrow
+Test Data:          add_book("Test Book", "Author Name" 5)
+                    add_member("Member Name")
+Tests:              library.borrow_book(member_id, book_id)
+                    Library.books[0].books.copies
+                    library,members[0].borrowed_books
+                    member_id, book_id, "borrow"             
+Expected Output:    "Book borrowed: Test Book by Member Name"
+                    4
+                    1
+                    library
