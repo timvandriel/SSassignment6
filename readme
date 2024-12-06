@@ -1,0 +1,68 @@
+Book Tests
+TC001
+Title:              test_book_str
+Test Data:          book = Book("B1234", "Test Book", "Author Name", 5)  
+Precondition:       None   
+Test:               str(book)                                               
+Expected Output:    ID: B1234, Title: Test Book, Author: Author Name, Copies: 5
+
+
+Member Tests
+TC002
+Title:              test_borrow_book
+Test Data:          member = Member("M1234", "Member Name")
+                    book = Book("B1234", "Test Book", "Author Name", 5)
+Precondition:       None
+Test:               member.borrow_book(book)
+Expected Output:    True
+
+
+TC003
+Title:              test_borrow_book_limit
+Test Data:          member = Member("M1234", "Member Name")
+                    book1 = Book("B1234", "Test Book 1", "Author Name", 5)
+                    book2 = Book("B1235", "Test Book 2", "Author Name", 5)
+                    book3 = Book("B1236", "Test Book 3", "Author Name", 5)
+                    book4 = Book("B1237", "Test Book 4", "Author Name", 5)
+Precondition:       member.borrow_book(book1)
+                    member.borrow_book(book2)
+                    member.borrow_book(book3)
+Test:               member.borrow_book(book4)
+                    book4 not in member.borrowed_books
+Expected Output:    False
+                    True
+
+
+TC004
+Title:              test_return_book_success
+Test Data:          member = Member("M1234", "Member Name")
+                    book = Book("B1234", "Test Book", "Author Name", 5)
+Precondition:       member.borrow_book(book)
+                    returned_book = member.returned_book(book.book_id)
+Test:               returned_book = book
+                    book not in member.borrowed_books
+Expected Output:    True    
+                    True
+
+
+TC005
+Title:              test_return_book_not_borrowed
+Test Data:          member = Member("M1234", "Member Name")
+                    book = Book("B1234", "Test Book", "Author Name", 5)
+Precondition:       returned_book = member.return_book(book.book_id)
+Test:               returned_book is None
+Expected Output:    True
+
+
+TC006
+Title:              test_member_str
+Test Data:          member = Member("M1234", "Member Name")
+Precondition:       None
+Test:               str(member) = "ID: M1234, Name: Member Name, Borrowed Books: None"
+Expected Output:    True
+
+
+Library Tests
+TC007
+Title:              test_add_book
+Precondition:       

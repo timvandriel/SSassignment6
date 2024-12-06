@@ -11,6 +11,7 @@ class Book:
 
     def __str__(self):
         return f"ID: {self.book_id}, Title: {self.title}, Author: {self.author}, Copies: {self.copies}"
+        # statement 1
 
 
 class Member:
@@ -22,19 +23,24 @@ class Member:
     def borrow_book(self, book):
         if len(self.borrowed_books) >= 3:
             return False  # Limit of 3 books per member
+        # statement 2
         self.borrowed_books.append(book)
         return True
+        # statement 3
 
     def return_book(self, book_id):
         for book in self.borrowed_books:
             if book.book_id == book_id:
                 self.borrowed_books.remove(book)
                 return book
+                # statement 4
         return None
+        #statement 5
 
     def __str__(self):
         books = ", ".join([book.title for book in self.borrowed_books]) or "None"
         return f"ID: {self.member_id}, Name: {self.name}, Borrowed Books: {books}"
+        # statement 6
 
 
 class Library:
@@ -48,12 +54,14 @@ class Library:
         book = Book(book_id, title, author, copies)
         self.books.append(book)
         print(f"Book added: {book}")
+        # statement 7
 
     def add_member(self, name):
         member_id = f"M{random.randint(1000, 9999)}"
         member = Member(member_id, name)
         self.members.append(member)
         print(f"Member added: {member}")
+        # statement 8
 
     def borrow_book(self, member_id, book_id):
         member = self.find_member(member_id)
