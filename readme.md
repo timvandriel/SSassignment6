@@ -1,80 +1,132 @@
 Book Tests
 TC001
-Title:              test_book_str
-Test Data:          book = Book("B1234", "Test Book", "Author Name", 5)  
-Precondition:       None   
-Test:               str(book)                                               
-Expected Output:    ID: B1234, Title: Test Book, Author: Author Name, Copies: 5
+Title:                  test_book_str
+Test Data:              book = Book("B1234", "Test Book", "Author Name", 5)  
+Precondition:           None   
+Test:                   str(book)                                               
+Expected Output:        ID: B1234, Title: Test Book, Author: Author Name, Copies: 5
 
 
-Member Tests
-TC002
-Title:              test_borrow_book
-Test Data:          member = Member("M1234", "Member Name")
-                    book = Book("B1234", "Test Book", "Author Name", 5)
-Precondition:       None
-Test:               member.borrow_book(book)
-Expected Output:    True
+Member Tests    
+TC002   
+Title:                  test_borrow_book
+Test Data:              member = Member("M1234", "Member Name")
+                        book = Book("B1234", "Test Book", "Author Name", 5)
+Precondition:           None
+Test:                   member.borrow_book(book)
+Expected Output:        True
 
 
-TC003
-Title:              test_borrow_book_limit
-Test Data:          member = Member("M1234", "Member Name")
-                    book1 = Book("B1234", "Test Book 1", "Author Name", 5)
-                    book2 = Book("B1235", "Test Book 2", "Author Name", 5)
-                    book3 = Book("B1236", "Test Book 3", "Author Name", 5)
-                    book4 = Book("B1237", "Test Book 4", "Author Name", 5)
-Precondition:       member.borrow_book(book1)
-                    member.borrow_book(book2)
-                    member.borrow_book(book3)
-Test:               member.borrow_book(book4)
-                    book4 not in member.borrowed_books
-Expected Output:    False
-                    True
+TC003   
+Title:                  test_borrow_book_limit
+Test Data:              member = Member("M1234", "Member Name")
+                        book1 = Book("B1234", "Test Book 1", "Author Name", 5)
+                        book2 = Book("B1235", "Test Book 2", "Author Name", 5)
+                        book3 = Book("B1236", "Test Book 3", "Author Name", 5)
+                        book4 = Book("B1237", "Test Book 4", "Author Name", 5)
+Precondition:           member.borrow_book(book1)
+                        member.borrow_book(book2)
+                        member.borrow_book(book3)
+Test:                   member.borrow_book(book4)
+                        book4 not in member.borrowed_books
+Expected Output:        False
+                        True
 
 
-TC004
-Title:              test_return_book_success
-Test Data:          member = Member("M1234", "Member Name")
-                    book = Book("B1234", "Test Book", "Author Name", 5)
-Precondition:       member.borrow_book(book)
-                    returned_book = member.returned_book(book.book_id)
-Test:               returned_book = book
-                    book not in member.borrowed_books
-Expected Output:    True    
-                    True
+TC004   
+Title:                  test_return_book_success
+Test Data:              member = Member("M1234", "Member Name")
+                        book = Book("B1234", "Test Book", "Author Name", 5)
+Precondition:           member.borrow_book(book)
+                        returned_book = member.returned_book(book.book_id)
+Test:                   returned_book = book
+                        book not in member.borrowed_books
+Expected Output:        True    
+                        True
+
 
 
 TC005
-Title:              test_return_book_not_borrowed
-Test Data:          member = Member("M1234", "Member Name")
-                    book = Book("B1234", "Test Book", "Author Name", 5)
-Precondition:       returned_book = member.return_book(book.book_id)
-Test:               returned_book is None
-Expected Output:    True
-
+Title:                  test_return_book_not_found
+Test Data:              member = Member(member_id=1, name="John Doe")
+Precodition:            Book being returned has not been borrowed by this member yet
+Test:                   member.return_book(book_id=2)
+Expected Result:        False
 
 TC006
-Title:              test_member_str
-Test Data:          member = Member("M1234", "Member Name")
-Precondition:       None
-Test:               str(member) = "ID: M1234, Name: Member Name, Borrowed Books: None"
-Expected Output:    True
+Title:                  test_return_book_not_borrowed
+Test Data:              member = Member("M1234", "Member Name")
+                        book = Book("B1234", "Test Book", "Author Name", 5)
+Precondition:           returned_book = member.return_book(book.book_id)
+Test:                   returned_book is None
+Expected Output:        True
+
+
+TC007
+Title:                  test_member_str
+Test Data:              member = Member("M1234", "Member Name")
+Precondition:           None
+Test:                   str(member)
+Expected Output:        "ID: M1234, Name: Member Name, Borrowed Books: None"
 
 
 Library Tests
-TC007
-Title:              test_add_book
-Precondition:       
+TC008
+Title:                  test_add_book
+Precondition:           book added to library
+Test Data:              added_book = self.library.books[0]
+Test:                   library.add_book(title="New Book", author="Author X", copies=5)
+Expected Output:        Book added: New Book
 
 
+TC009
+Title:                  test_add_member
+Test:                   library.add_member(name="Jane Doe")
+Expected Output:        Member added: Jane Doe
 
 
+TC010
+Title:                  test_successful_borrow
+Precondition:           library.add_book("Test Book", "Author Name", 5)
+                        library.add_member("Member Name")
+Test Data:              book_id = self.library.books[0].book_id
+                        member_id = self.library.members[0].member_id
+Test:                   library.borrow_book(member_id, book_id)
+Expected Output:        "Book borrowed: Test Book by Member Name"
 
 
+TC011
+Title:                  test_no_member_found
+Precondition:           Member does not exist with id 999
+Test:                   library.borrow_book(member_id=999, book_id=1)
+Expected Output:        "No member found with ID 999"
+
+TC012
+Title:                  test_no_book_found
+Precondition:           Book does not exist with id 999, member with member_id exists
+Test:                   library.borrow_book(member_id=member_id, book_id=999)
+Expected Output:        No book found with ID 999
 
 
+TC013
+Title:                  test_no_copies_available
+Test Data:              library.add_book("Test Book", "Author Name", 0)
+                        library.add_member("Member Name")
+Precondition:           book_id and member_id are known, no copies were in and none were returned
+Test:                   library.borrow_book(member_id, book_id)
+Expected Output:        "No copies available for book: Test Book"
 
+
+TC014
+Title:                  test_max_books_borrowed
+Test Data:              4 unique books required
+Precondition:           Member exists and has already borrowed 3 books
+Test:                   library.borrow_book(member_id, self.librayr.book[3].book_id)
+Expected Output:        "Member Name has already borrowed the maximum number of books."
+
+
+TC015
+Title:                  
 
 
 TC034
